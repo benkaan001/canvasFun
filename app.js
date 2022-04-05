@@ -143,13 +143,26 @@ function animate() {
 
       // calculate the collision distance
       if (distance - enemy.radius - projectile.radius < 1) {
-        // wrap the removal inside a setTimeout to eliminate the flashing effect that takes place when animate function is fired
-        setTimeout(() => {
-          // remove the enemy from the enemies array
-          enemies.splice(enemyIndex, 1);
-          // remove the projectile from the projectiles array
-          projectiles.splice(projectileIndex, 1);
-        }, 0);
+        // check first if the enemy size is small enough to remove
+
+        if (enemy.radius - 10 > 5) {
+          // enemy.radius -= 10;
+          // ADD THE GSAP ANIMATION
+          gsap.to(enemy, {
+            radius: enemy.radius - 10,
+          });
+          setTimeout(() => {
+            projectiles.splice(projectileIndex, 1);
+          }, 0);
+        } else {
+          // wrap the removal inside a setTimeout to eliminate the flashing effect that takes place when animate function is fired
+          setTimeout(() => {
+            // remove the enemy from the enemies array
+            enemies.splice(enemyIndex, 1);
+            // remove the projectile from the projectiles array
+            projectiles.splice(projectileIndex, 1);
+          }, 0);
+        }
       }
     });
   });
