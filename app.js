@@ -1,5 +1,6 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
+const scoreEl = document.querySelector('#score');
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -140,6 +141,9 @@ function spawnEnemies() {
 // to add the end game logic declare an animationId that wil be assigned to requestAnimationFrame
 let animationId;
 
+// initial score
+let score = 0;
+
 function animate() {
   animationId = requestAnimationFrame(animate);
   // set the opacity to 0.1 to give the fadeaway effect on the drawings on the animation
@@ -209,6 +213,10 @@ function animate() {
 
         // check first if the enemy size is small enough to remove
         if (enemy.radius - 10 > 5) {
+          // INCREASE THE SCORE
+          score += 10;
+          scoreEl.innerHTML = score;
+
           // enemy.radius -= 10;
           // ADD THE GSAP ANIMATION
           gsap.to(enemy, {
@@ -218,6 +226,9 @@ function animate() {
             projectiles.splice(projectileIndex, 1);
           }, 0);
         } else {
+          // INCREASE THE SCORE BY 25 FOR COMPLETELY REMOVING A LARGE ENEMY
+          score += 25;
+          scoreEl.innerHTML = score;
           // wrap the removal inside a setTimeout to eliminate the flashing effect that takes place when animate function is fired
           setTimeout(() => {
             // remove the enemy from the enemies array
