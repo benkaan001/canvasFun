@@ -99,7 +99,7 @@ function spawnEnemies() {
     };
 
     enemies.push(new Enemy(x, y, radius, color, velocity));
-  }, 1000);
+  }, 5000);
 }
 
 function animate() {
@@ -110,8 +110,26 @@ function animate() {
   projectiles.forEach((projectile) => {
     projectile.update();
   });
-  enemies.forEach((enemy) => {
+  enemies.forEach((enemy, enemyIndex) => {
     enemy.update();
+    // calculate the distance between projectile and enemy
+    projectiles.forEach((projectile, projectileIndex) => {
+      const distance = Math.hypot(
+        projectile.x - enemy.x,
+        projectile.y - enemy.y
+      );
+
+      // calculate the collision distance
+      if (distance - enemy.radius - projectile.radius < 1) {
+        // wrap the removal inside a setTimeout to eliminate the flashing effect
+        setTimeout(() => {
+          // remove the enemy from the enemies array
+          enemies.splice(enemyIndex, 1);
+          // remove the projectile from the projectiles array
+          projectiles.splice(projectileIndex, 1);
+        }, 0);
+      }
+    });
   });
 }
 window.addEventListener('click', (event) => {
