@@ -63,6 +63,42 @@ class Enemy {
     this.draw();
   }
 }
+// to slow down the explosion effect
+const friction = 0.99;
+
+// create Particle class using Enemy class
+class Particle {
+  constructor(x, y, radius, color, velocity) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+    this.velocity = velocity;
+    // the alpha value initially will be completely opeque
+    this.alpha = 1;
+  }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    ///////////
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ///////////
+    ctx.restore();
+  }
+
+  update() {
+    this.draw();
+    // incorporate the friction value to determine the speed for explosion's x & y values
+    this.velocity.x *= friction;
+    this.velocity.y *= friction;
+    this.x = this.x + this.velocity.x;
+    this.y = this.y + this.velocity.y;
+    this.alpha -= 0.01;
+  }
+}
 
 const x = canvas.width / 2;
 const y = canvas.height / 2;
@@ -71,6 +107,7 @@ const player = new Player(x, y, 15, 'white');
 
 const projectiles = [];
 const enemies = [];
+const particles = [];
 
 // create release enemies function
 function spawnEnemies() {
@@ -98,7 +135,7 @@ function spawnEnemies() {
     };
 
     enemies.push(new Enemy(x, y, radius, color, velocity));
-  }, 5000);
+  }, 1000);
 }
 // to add the end game logic declare an animationId that wil be assigned to requestAnimationFrame
 let animationId;
@@ -110,6 +147,16 @@ function animate() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   // to ensure the player is not being cleared by clearRect
   player.draw();
+
+  particles.forEach((particle, particleIndex) => {
+    // ensure particles do not reappear when the alpha values goes below zero
+    if (particle.alpha <= 0) {
+      particles.splice(particleIndex, 1);
+    } else {
+      particle.update();
+    }
+  });
+
   projectiles.forEach((projectile, projectileIndex) => {
     projectile.update();
     // remove the projectile from the game one they go past outside the edge of the screen
@@ -143,8 +190,24 @@ function animate() {
 
       // calculate the collision distance
       if (distance - enemy.radius - projectile.radius < 1) {
-        // check first if the enemy size is small enough to remove
+        // create particles/ explosions
+        // randomize the radius between 0-2 to create the fireworks effect
+        for (let i = 0; i < enemy.radius * 2; i++) {
+          particles.push(
+            new Particle(
+              projectile.x,
+              projectile.y,
+              Math.random() * 2,
+              enemy.color,
+              {
+                x: (Math.random() - 0.5) * (Math.random() * 6),
+                y: (Math.random() - 0.5) * (Math.random() * 6),
+              }
+            )
+          );
+        }
 
+        // check first if the enemy size is small enough to remove
         if (enemy.radius - 10 > 5) {
           // enemy.radius -= 10;
           // ADD THE GSAP ANIMATION
