@@ -101,17 +101,39 @@ function spawnEnemies() {
     enemies.push(new Enemy(x, y, radius, color, velocity));
   }, 5000);
 }
+// to add the end game logic declare an animationId that wil be assigned to requestAnimationFrame
+let animationId;
 
 function animate() {
-  requestAnimationFrame(animate);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  animationId = requestAnimationFrame(animate);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   // to ensure the player is not being cleared by clearRect
   player.draw();
-  projectiles.forEach((projectile) => {
+  projectiles.forEach((projectile, projectileIndex) => {
     projectile.update();
+    // remove the projectile from the game one they go past outside the edge of the screen
+    if (
+      projectile.x + projectile.radius < 0 ||
+      projectile.x - projectile.radius > canvas.width ||
+      projectile.y + projectile.radius < 0 ||
+      projectile.y - projectile.radius > canvas.height
+    ) {
+      setTimeout(() => {
+        projectiles.splice(projectileIndex, 1);
+      }, 0);
+    }
   });
   enemies.forEach((enemy, enemyIndex) => {
     enemy.update();
+    // calculate the distance between player and enemy
+    const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+    // end the game
+    if (distance - enemy.radius - player.radius < 1) {
+      // display the last animation frame
+      cancelAnimationFrame(animationId);
+    }
+
     // calculate the distance between projectile and enemy
     projectiles.forEach((projectile, projectileIndex) => {
       const distance = Math.hypot(
@@ -121,7 +143,7 @@ function animate() {
 
       // calculate the collision distance
       if (distance - enemy.radius - projectile.radius < 1) {
-        // wrap the removal inside a setTimeout to eliminate the flashing effect
+        // wrap the removal inside a setTimeout to eliminate the flashing effect that takes place when animate function is fired
         setTimeout(() => {
           // remove the enemy from the enemies array
           enemies.splice(enemyIndex, 1);
