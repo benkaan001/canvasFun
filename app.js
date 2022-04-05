@@ -1,6 +1,9 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
-const scoreEl = document.querySelector('#score');
+const scoreEl = document.querySelector('.score');
+const buttonEl = document.querySelector('.startGame');
+const modalEl = document.querySelector('.modal');
+const modalScoreEl = document.querySelector('#modalScore');
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -183,6 +186,9 @@ function animate() {
     if (distance - enemy.radius - player.radius < 1) {
       // display the last animation frame
       cancelAnimationFrame(animationId);
+      // display back the modal with final score & update the modal score to the final score
+      modalEl.style.display = 'flex';
+      modalScoreEl.innerHTML = score;
     }
 
     // calculate the distance between projectile and enemy
@@ -241,6 +247,7 @@ function animate() {
     });
   });
 }
+
 window.addEventListener('click', (event) => {
   const angle = Math.atan2(
     event.clientY - canvas.height / 2,
@@ -257,5 +264,10 @@ window.addEventListener('click', (event) => {
   );
 });
 
-animate();
-spawnEnemies();
+// start the game on button click
+buttonEl.addEventListener('click', () => {
+  animate();
+  spawnEnemies();
+  // remove the modal from the screen
+  modalEl.style.display = 'none';
+});
