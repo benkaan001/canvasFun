@@ -9,13 +9,28 @@
 body {
   background: black;
 }
+/* .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} */
 .scoreWrapper {
+  position: fixed;
+  color: white;
+  margin-left: 50px;
+  margin-top: 25px;
+  user-select: none;
+  width: 50%;
+}
+
+/* .levelWrapper {
   position: fixed;
   color: white;
   margin-left: 2px;
   margin-top: 2px;
   user-select: none;
-}
+  width: 100%;
+} */
 
 .modal {
   position: fixed;
@@ -28,7 +43,10 @@ body {
 .modalScore {
   background-color: white;
   padding: 6px;
-  min-width: 50%;
+  min-width: 30%;
+  max-width: 40%;
+  display: flex;
+  flex-direction: column;
   text-align: center;
 }
 h1 {

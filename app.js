@@ -22,6 +22,31 @@ class Player {
     ctx.fillStyle = this.color;
     ctx.fill();
   }
+  update() {
+    this.draw();
+    this.velocity.x *= this.friction;
+    this.velocity.y *= this.friction;
+
+    if (
+      this.x - this.radius + this.velocity.x > 0 &&
+      this.x + this.radius + this.velocity.x < canvas.width
+    ) {
+      this.x += this.velocity.x;
+    } else {
+      this.velocity.x = 0;
+    }
+
+    if (
+      this.y - this.radius + this.velocity.y > 0 &&
+      this.y + this.radius + this.velocity.y < canvas.height
+    ) {
+      this.y += this.velocity.y;
+    } else {
+      this.velocity.y = 0;
+    }
+    this.x = this.x + this.velocity.x;
+    this.y = this.y + this.velocity.y;
+  }
 }
 
 class Projectile {
@@ -107,11 +132,21 @@ class Particle {
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 
-const player = new Player(x, y, 15, 'white');
+let player = new Player(x, y, 15, 'white');
 
-const projectiles = [];
-const enemies = [];
-const particles = [];
+let projectiles = [];
+let enemies = [];
+let particles = [];
+// RESTART GAME
+function init() {
+  player = new Player(x, y, 15, 'white');
+  projectiles = [];
+  enemies = [];
+  particles = [];
+  score = 0;
+  scoreEl.innerHTML = score;
+  modalScoreEl.innerHTML = score;
+}
 
 // create release enemies function
 function spawnEnemies() {
@@ -266,6 +301,7 @@ window.addEventListener('click', (event) => {
 
 // start the game on button click
 buttonEl.addEventListener('click', () => {
+  init();
   animate();
   spawnEnemies();
   // remove the modal from the screen
